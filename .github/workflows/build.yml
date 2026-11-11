@@ -1,0 +1,33 @@
+
+name: MW2005 Modern Redux Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup 32-bit MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x86
+
+      - name: Build DLL
+        shell: cmd
+        run: |
+          if not exist src\mw2005.cpp exit /b 1
+          cl /nologo /LD /EHsc /O2 /MT src\mw2005.cpp /link /MACHINE:X86 /OUT:MW2005_Modern_Redux.dll
+
+      - name: Upload DLL
+        uses: actions/upload-artifact@v4
+        with:
+          name: MW2005-Modern-Redux
+          path: MW2005_Modern_Redux.dll
+          
